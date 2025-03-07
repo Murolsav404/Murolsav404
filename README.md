@@ -1,103 +1,88 @@
-from typing import List
-
-# Завдання 1: Керування завданнями
-class Task:
-    def __init__(self, title: str, description: str, deadline: str):
-        self.title = title
-        self.description = description
-        self.deadline = deadline
-        self.completed = False
-
-    def mark_completed(self):
-        self.completed = True
-
-class TaskManager:
-    def __init__(self):
-        self.tasks: List[Task] = []
-
-    def add_task(self, task: Task):
-        self.tasks.append(task)
-
-    def remove_task(self, title: str):
-        self.tasks = [task for task in self.tasks if task.title != title]
-
-    def show_tasks(self):
-        for task in self.tasks:
-            status = "✔ Done" if task.completed else "❌ Not done"
-            print(f"{task.title} - {task.deadline} [{status}]")
-
-# Завдання 2: Онлайн-магазин
-class Product:
-    def __init__(self, name: str, price: float, stock: int):
+# Завдання 1: Класи тварин
+class Animal:
+    def __init__(self, name: str, species: str):
         self.name = name
-        self.price = price
-        self.stock = stock
+        self.species = species
 
-class Cart:
-    def __init__(self):
-        self.items: List[Product] = []
+    def make_sound(self):
+        return "Some generic sound"
 
-    def add_product(self, product: Product):
-        if product.stock > 0:
-            self.items.append(product)
-            product.stock -= 1
+class Dog(Animal):
+    def __init__(self, name: str, breed: str):
+        super().__init__(name, "Dog")
+        self.breed = breed
 
-    def remove_product(self, product_name: str):
-        self.items = [item for item in self.items if item.name != product_name]
+    def make_sound(self):
+        return "Woof!"
 
-    def total_price(self):
-        return sum(item.price for item in self.items)
+class Cat(Animal):
+    def __init__(self, name: str, color: str):
+        super().__init__(name, "Cat")
+        self.color = color
 
-# Завдання 3: Банківська система
-class BankAccount:
-    def __init__(self, owner: str, account_number: str, balance: float = 0):
-        self.owner = owner
-        self.account_number = account_number
-        self.balance = balance
+    def make_sound(self):
+        return "Meow!"
 
-    def deposit(self, amount: float):
-        self.balance += amount
-
-    def withdraw(self, amount: float):
-        if amount <= self.balance:
-            self.balance -= amount
-
-    def transfer(self, amount: float, recipient_account: 'BankAccount'):
-        if amount <= self.balance:
-            self.balance -= amount
-            recipient_account.balance += amount
-
-class Bank:
-    def __init__(self):
-        self.accounts: List[BankAccount] = []
-
-    def add_account(self, account: BankAccount):
-        self.accounts.append(account)
-
-# Завдання 4: Керування персоналом
-class Employee:
-    def __init__(self, name: str, position: str, salary: float):
+# Завдання 2: Класи осіб
+class Person:
+    def __init__(self, name: str, age: int):
         self.name = name
-        self.position = position
-        self.salary = salary
+        self.age = age
 
-class Department:
+    def get_age(self):
+        return self.age
+
+class Driver(Person):
+    def __init__(self, name: str, age: int, license_number: str):
+        super().__init__(name, age)
+        self.license_number = license_number
+
+# Завдання 3: Класи транспортних засобів
+class Vehicle:
+    def __init__(self, speed: float):
+        self.speed = speed
+
+    def move(self):
+        return f"Moving at {self.speed} km/h"
+
+class Car(Vehicle):
+    def __init__(self, speed: float, brand: str):
+        super().__init__(speed)
+        self.brand = brand
+
+class Bicycle(Vehicle):
+    def __init__(self, speed: float, type_: str):
+        super().__init__(speed)
+        self.type_ = type_
+
+# Завдання 4: Класи пристроїв
+class Device:
+    def turn_on(self):
+        return "Device is turned on"
+
+    def turn_off(self):
+        return "Device is turned off"
+
+class Phone(Device):
+    def __init__(self, model: str):
+        self.model = model
+
+class Laptop(Device):
+    def __init__(self, brand: str):
+        self.brand = brand
+
+# Завдання 5: Класи мов програмування
+class ProgrammingLanguage:
     def __init__(self, name: str):
         self.name = name
-        self.employees: List[Employee] = []
 
-    def add_employee(self, employee: Employee):
-        self.employees.append(employee)
+    def greet(self):
+        return f"Hello from {self.name}!"
 
-    def remove_employee(self, name: str):
-        self.employees = [emp for emp in self.employees if emp.name != name]
+class Python(ProgrammingLanguage):
+    def __init__(self):
+        super().__init__("Python")
 
-    def total_salary(self):
-        return sum(emp.salary for emp in self.employees)
-
-student = Student("John")
-events = student.live_year()
-
-# Print the events of the year
-for event in events:
-    print(event)
+class JavaScript(ProgrammingLanguage):
+    def __init__(self):
+        super().__init__("JavaScrip

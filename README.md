@@ -1,78 +1,100 @@
-import random
+from typing import List
 
-class Cat:
-    def __init__(self, name):
+# Завдання 1: Керування завданнями
+class Task:
+    def __init__(self, title: str, description: str, deadline: str):
+        self.title = title
+        self.description = description
+        self.deadline = deadline
+        self.completed = False
+
+    def mark_completed(self):
+        self.completed = True
+
+class TaskManager:
+    def __init__(self):
+        self.tasks: List[Task] = []
+
+    def add_task(self, task: Task):
+        self.tasks.append(task)
+
+    def remove_task(self, title: str):
+        self.tasks = [task for task in self.tasks if task.title != title]
+
+    def show_tasks(self):
+        for task in self.tasks:
+            status = "✔ Done" if task.completed else "❌ Not done"
+            print(f"{task.title} - {task.deadline} [{status}]")
+
+# Завдання 2: Онлайн-магазин
+class Product:
+    def __init__(self, name: str, price: float, stock: int):
         self.name = name
+        self.price = price
+        self.stock = stock
 
-    def play(self):
-        return f"{self.name} the cat is playing."
+class Cart:
+    def __init__(self):
+        self.items: List[Product] = []
 
-    def sleep(self):
-        return f"{self.name} the cat is sleeping."
+    def add_product(self, product: Product):
+        if product.stock > 0:
+            self.items.append(product)
+            product.stock -= 1
 
-class Dog:
-    def __init__(self, name):
+    def remove_product(self, product_name: str):
+        self.items = [item for item in self.items if item.name != product_name]
+
+    def total_price(self):
+        return sum(item.price for item in self.items)
+
+# Завдання 3: Банківська система
+class BankAccount:
+    def __init__(self, owner: str, account_number: str, balance: float = 0):
+        self.owner = owner
+        self.account_number = account_number
+        self.balance = balance
+
+    def deposit(self, amount: float):
+        self.balance += amount
+
+    def withdraw(self, amount: float):
+        if amount <= self.balance:
+            self.balance -= amount
+
+    def transfer(self, amount: float, recipient_account: 'BankAccount'):
+        if amount <= self.balance:
+            self.balance -= amount
+            recipient_account.balance += amount
+
+class Bank:
+    def __init__(self):
+        self.accounts: List[BankAccount] = []
+
+    def add_account(self, account: BankAccount):
+        self.accounts.append(account)
+
+# Завдання 4: Керування персоналом
+class Employee:
+    def __init__(self, name: str, position: str, salary: float):
         self.name = name
+        self.position = position
+        self.salary = salary
 
-    def play(self):
-        return f"{self.name} the dog is playing."
-
-    def sleep(self):
-        return f"{self.name} the dog is sleeping."
-
-class Student:
-    def __init__(self, name):
+class Department:
+    def __init__(self, name: str):
         self.name = name
-        self.money = 100
-        self.knowledge = 0
-        self.stress = 0
-        self.cat = Cat("Whiskers")
-        self.dog = Dog("Buddy")
+        self.employees: List[Employee] = []
 
-    def work(self):
-        self.money += 50
-        self.stress += 10
-        return f"{self.name} worked and earned $50."
+    def add_employee(self, employee: Employee):
+        self.employees.append(employee)
 
-    def study(self):
-        self.knowledge += 10
-        self.stress += 5
-        return f"{self.name} studied and gained knowledge."
+    def remove_employee(self, name: str):
+        self.employees = [emp for emp in self.employees if emp.name != name]
 
-    def relax(self):
-        self.stress -= 20
-        return f"{self.name} is relaxing."
+    def total_salary(self):
+        return sum(emp.salary for emp in self.employees)
 
-    def spend_money(self):
-        self.money -= 20
-        return f"{self.name} spent $20 on holiday."
-
-    def live_day(self):
-        if self.money < 20:
-            return self.work()
-        elif self.stress > 50:
-            return self.relax()
-        elif self.knowledge < 50:
-            return self.study()
-        else:
-            return self.spend_money()
-
-    def live_year(self):
-        events = []
-        for day in range(365):
-            event = self.live_day()
-            events.append(event)
-            if random.random() < 0.3:
-                events.append(self.cat.play())
-            if random.random() < 0.3:
-                events.append(self.dog.play())
-            if random.random() < 0.1:
-                events.append(self.cat.sleep())
-            if random.random() < 0.1:
-                events.append(self.dog.sleep())
-        return events
-
-# Simulate a student's life for a year
 student = Student("John")
 events = student.live_year()
 

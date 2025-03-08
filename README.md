@@ -1,82 +1,66 @@
-import sqlite3
-import requests
-import time
-from datetime import datetime
-import tkinter as tk
-from tkinter import messagebox
-
-# Створення БД
-conn = sqlite3.connect("exchange_rates.db")
-cursor = conn.cursor()
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS exchange_rate (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp TEXT,
-    usd_rate REAL
-)
-""")
-conn.commit()
-
-# Функція для отримання курсу долара (замініть URL на актуальний сайт НБУ)
-def get_usd_rate():
-    response = requests.get("https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=USD&json")
-    if response.status_code == 200:
-        try:
-            data = response.json()
-            return float(data[0]["rate"])
-        except (ValueError, KeyError, IndexError):
-            return None
-    return None
-
-# Функція для додавання запису в БД
-def insert_exchange_rate():
-    usd_rate = get_usd_rate()
-    if usd_rate is not None:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        cursor.execute("INSERT INTO exchange_rate (timestamp, usd_rate) VALUES (?, ?)", (timestamp, usd_rate))
-        conn.commit()
-        print(f"[{timestamp}] Додано курс USD: {usd_rate} грн")
-    else:
-        print("Не вдалося отримати курс валют.")
-
-# Функція для конвертації
-class CurrencyConverter:
-    def __init__(self, rate):
-        self.rate = rate
+# Завдання 1: Створення ітерованого об'єкта
+class IterableObject:
+    def __init__(self, data):
+        self.data = data
     
-    def convert_to_usd(self, amount):
-        return round(amount / self.rate, 2)
+    def __iter__(self):
+        return (item for item in self.data)
 
-# Графічний інтерфейс
-def convert_currency():
-    try:
-        amount = float(entry.get())
-        rate = get_usd_rate()
-        if rate:
-            converter = CurrencyConverter(rate)
-            result = converter.convert_to_usd(amount)
-            messagebox.showinfo("Результат", f"{amount} грн = {result} USD")
-        else:
-            messagebox.showerror("Помилка", "Не вдалося отримати курс валют")
-    except ValueError:
-        messagebox.showerror("Помилка", "Введіть коректне число")
+# Перевірка
+iter_obj = IterableObject([1, 2, 3, 4, 5])
+for item in iter_obj:
+    print(item)
 
-# GUI налаштування
-root = tk.Tk()
-root.title("Конвертер Валюти")
+# Завдання 2: Декоратор для калькулятора
+import operator
 
-tk.Label(root, text="Введіть суму в грн:").pack()
-entry = tk.Entry(root)
-entry.pack()
-tk.Button(root, text="Конвертувати", command=convert_currency).pack()
+def calculator_decorator(func):
+    def wrapper(expression):
+        allowed_operators = {'+': operator.add, '-': operator.sub, '*': operator.mul, '/': operator.truediv}
+        try:
+            tokens = expression.split()
+            if len(tokens) != 3:
+                raise ValueError("Формат виразу повинен бути: число оператор число")
+            
+            num1, op, num2 = tokens
+            num1, num2 = float(num1), float(num2)
+            
+            if op not in allowed_operators:
+                raise ValueError(f"Оператор '{op}' не підтримується")
+            
+            result = allowed_operators[op](num1, num2)
+            return result
+        except Exception as e:
+            return f"Помилка: {e}"
+    return wrapper
 
-root.mainloop()
+@calculator_decorator
+def calculate(expression):
+    return eval(expression)  # eval більше не використовується напряму
 
-# Запуск циклічного оновлення
-try:
-    while True:
-        insert_exchange_rate()
-        time.sleep(1800)  # Оновлення раз на 30 хвилин
-except KeyboardInterrupt:
-    print("Зупинено користувачем.")
-    conn.close()
+# Перевірка
+print(calculate("10 + 5"))  # 15.0
+print(calculate("10 / 0"))  # Помилка: ділення на нуль
+print(calculate("10 & 5"))  # Помилка: оператор не підтримується
+
+# Додаткове завдання: Ітерований студент
+class StudentSimulator:
+    def __init__(self, name, days):
+        self.name = name
+        self.days = days
+        self.current_day = 0
+    
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        if self.current_day >= len(self.days):
+            raise StopIteration
+        day_result = f"День {self.current_day + 1}: {self.days[self.current_day]}"
+        self.current_day += 1
+        return day_result
+
+# Перевірка
+student = StudentSimulator("Іван", ["Відвідав лекцію", "Написав тест", "Здав домашку"])
+for day in student:
+    print(day)
